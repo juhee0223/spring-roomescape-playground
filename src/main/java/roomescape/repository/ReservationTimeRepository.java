@@ -15,7 +15,8 @@ public class ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> {
-        return ReservationTime.createFromPersistedData(resultSet.getLong("id"), resultSet.getObject("time", LocalTime.class));
+        return ReservationTime.createFromPersistedData(resultSet.getLong("id"),
+                resultSet.getObject("time", LocalTime.class));
     };
 
     public ReservationTimeRepository(JdbcTemplate jdbcTemplate) {

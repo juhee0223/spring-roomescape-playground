@@ -12,7 +12,7 @@ public class Reservation {
     private final ReservationTime time;
 
     private Reservation(Long id, String name, LocalDate date, ReservationTime time) {
-        if (name == null || name.isBlank()){
+        if (name == null || name.isBlank()) {
             throw new ReservationInvalidException("예약자 이름은 비워둘 수 없습니다.");
         }
 
@@ -30,11 +30,7 @@ public class Reservation {
         this.time = time;
     }
 
-    public static Reservation createNewReservation(
-            String name,
-            LocalDate date,
-            ReservationTime time,
-            Clock clock) {
+    public static Reservation createNewReservation(String name, LocalDate date, ReservationTime time, Clock clock) {
         Reservation reservation = new Reservation(null, name, date, time);
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getTime());
         if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
@@ -43,11 +39,7 @@ public class Reservation {
         return reservation;
     }
 
-    public static Reservation createFromPersistedData(
-            Long id,
-            String name,
-            LocalDate date,
-            ReservationTime time) {
+    public static Reservation createFromPersistedData(Long id, String name, LocalDate date, ReservationTime time) {
         if (id == null) {
             throw new ReservationInvalidException("DB에 저장된 예약의 ID는 비어있을 수 없습니다.");
         }

@@ -36,16 +36,16 @@ public class ReservationRepository {
 
     public List<Reservation> findAll() {
         String sql = """
-                    SELECT
-                        r.id AS reservation_id,
-                        r.name,
-                        r.date,
-                        t.id AS time_id,
-                        t.time AS time_value
-                    FROM reservation AS r
-                    INNER JOIN time AS t
-                        ON r.time_id = t.id
-                    """;
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.time AS time_value
+                FROM reservation AS r
+                INNER JOIN time AS t
+                    ON r.time_id = t.id
+                """;
         return jdbcTemplate.query(
                 sql,
                 reservationRowMapper);
@@ -65,7 +65,8 @@ public class ReservationRepository {
 
         Long id = keyHolder.getKey().longValue();
 
-        return Reservation.createFromPersistedData(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return Reservation.createFromPersistedData(id, reservation.getName(), reservation.getDate(),
+                reservation.getTime());
     }
 
     public int deleteById(Long id) {
