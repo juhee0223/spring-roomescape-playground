@@ -14,26 +14,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.exception.ReservationNotFoundException;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.ReservationTimeService;
 
 @Controller
 public class ReservationTimeController {
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeRepository reservationTimeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+        this.reservationTimeService = reservationTimeService;
     }
 
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @Valid @RequestBody ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime temporaryReservationTime = ReservationTime.createNewReservationTime(
+        ReservationTime savedReservationTime = reservationTimeService.createReservationTime(
                 reservationTimeRequest.time());
-        ReservationTime savedReservationTime = reservationTimeRepository.save(temporaryReservationTime);
         ReservationTimeResponse reservationTimeResponse = ReservationTimeResponse.from(savedReservationTime);
 
-        return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id())).body(reservationTimeResponse);
+        return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id()))
+                .body(reservationTimeResponse);
     }
 
     @GetMapping("/time")
@@ -44,17 +43,12 @@ public class ReservationTimeController {
     @GetMapping("/times")
     @ResponseBody
     public List<ReservationTimeResponse> findAllReservationTimes() {
-        return reservationTimeRepository.findAll().stream().map(ReservationTimeResponse::from).toList();
+        return reservationTimeService.findAllReservationTimes().stream().map(ReservationTimeResponse::from).toList();
     }
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        int deletedRows = reservationTimeRepository.deleteById(id);
-
-        if (deletedRows == 0) {
-            throw new ReservationNotFoundException("id " + id + "에 해당하는 시간을 찾을 수 없습니다.");
-        }
-
+        reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
 }
