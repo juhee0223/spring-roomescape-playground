@@ -17,16 +17,20 @@ import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Controller
 public class ReservationController {
     private final Clock clock;
 
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationController(Clock clock, ReservationRepository reservationRepository) {
+    public ReservationController(Clock clock, ReservationRepository reservationRepository,
+                                 ReservationTimeRepository reservationTimeRepository) {
         this.clock = clock;
         this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     @PostMapping("/reservations")
@@ -35,7 +39,7 @@ public class ReservationController {
         Reservation temporaryReservation = Reservation.createNewReservation(
                 reservationRequest.name(),
                 reservationRequest.date(),
-                reservationRequest.time(),
+                reservationTimeRepository.findById(reservationRequest.timeId()),
                 clock);
 
         Reservation savedReservation = reservationRepository.save(temporaryReservation);
@@ -45,7 +49,7 @@ public class ReservationController {
 
     @GetMapping("/reservation")
     public String reservationPage() {
-        return "reservation";
+        return "new-reservation";
     }
 
     @GetMapping("/reservations")
